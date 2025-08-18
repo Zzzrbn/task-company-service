@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.zzzrbn.taskcompanyservice.entity.Company;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTO;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
 import com.zzzrbn.taskcompanyservice.entity.Userrecord;
 
 @Component
@@ -18,7 +20,7 @@ public class CompanyMapper {
         }
         
         CompanyDTO dto = new CompanyDTO();
-        dto.setId(company.getId());
+//        dto.setId(company.getId());
         dto.setName(company.getName());
         dto.setBudget(company.getBudget());
         dto.setUsers(userrecords);
@@ -32,7 +34,7 @@ public class CompanyMapper {
         }
         
         Company company = new Company();
-        company.setId(companyDTO.getId());
+//        company.setId(companyDTO.getId());
         company.setName(companyDTO.getName());
         company.setBudget(companyDTO.getBudget());
         
@@ -44,5 +46,43 @@ public class CompanyMapper {
         
         return company;
     }
+    
+    public Company companyrequestToCompany(CompanyDTORequest companyDTORequest) {
+        Company company = new Company();
+        company.setName(companyDTORequest.getName());
+        company.setBudget(companyDTORequest.getBudget());
+        company.setUsersIds(companyDTORequest.getUserrecordIds());
+        return company;
+    }
+
+    public CompanyDTOResponse companyToCompanyResponse(Company company) {
+        CompanyDTOResponse response = new CompanyDTOResponse();
+        response.setId(company.getId());
+        response.setName(company.getName());
+        response.setBudget(company.getBudget());
+        response.setUsers(company.getUserrecords());
+        // Fetch user details from user-service
+//        try {
+//            if (company.getEmployeeIds() != null && !company.getEmployeeIds().isEmpty()) {
+//                List<User> employees = userClient.getUsersByCompanyId(company.getId());
+//                response.setEmployees(employees);
+//            } else {
+//                response.setEmployees(List.of());
+//            }
+//        } catch (Exception e) {
+//            log.error("Error fetching user details for companyId: {}", company.getId(), e);
+//            response.setEmployees(List.of());
+//        }
+        
+        return response;
+    }
+    
+    public void updateCompany(Company company, CompanyDTORequest companyDTORequest)
+    {
+    	company.setName(companyDTORequest.getName());
+		company.setBudget(companyDTORequest.getBudget());
+		company.setUsersIds(companyDTORequest.getUserrecordIds());
+    }
+    
 	
 }

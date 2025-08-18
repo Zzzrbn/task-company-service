@@ -15,7 +15,7 @@ public class UserMapper {
         }
         
         UserDTO dto = new UserDTO();
-        dto.setId(userrecord.getId());
+        //dto.setId(userrecord.getId());
         dto.setFirstname(userrecord.getFirstname());
         dto.setLastname(userrecord.getFirstname());
         dto.setPhoneNumber(userrecord.getPhoneNumber());
@@ -30,7 +30,7 @@ public class UserMapper {
         }
         
         Userrecord userrecord = new Userrecord();
-        userrecord.setId(userDTO.getId());
+        //userrecord.setId(userDTO.getId());
         userrecord.setFirstname(userDTO.getFirstname());
         userrecord.setLastname(userDTO.getFirstname());
         userrecord.setPhoneNumber(userDTO.getPhoneNumber());

@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class CompanyDTO {
+public class CompanyDTORequest {
 
     //private Long id;
 	@NotBlank(message = "Company name is required")
@@ -20,8 +20,9 @@ public class CompanyDTO {
 	
 	@Min(value = 0, message = "Budget must be >= 0")
 	private BigDecimal budget;
+	
     @JsonIgnoreProperties({
     	//"id", 
     	"companyId", "company"})
-    private List<Userrecord> users;
+    private List<Long> userrecordIds = new ArrayList<>();
 }

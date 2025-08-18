@@ -1,58 +1,111 @@
 package com.zzzrbn.taskcompanyservice.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zzzrbn.taskcompanyservice.controller.Feignuser;
 import com.zzzrbn.taskcompanyservice.dao.CompanyDAO;
 import com.zzzrbn.taskcompanyservice.entity.Company;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTO;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
+import com.zzzrbn.taskcompanyservice.entity.Userrecord;
+import com.zzzrbn.taskcompanyservice.mappers.CompanyMapper;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @Service
-public class CompanyServiceImpl implements CompanyService {
-
-	@Autowired
-	private CompanyDAO companyDAO;
-
-	@Override
-	@Transactional
-	public List<CompanyDTO> getAllCompanies() {
-		return companyDAO.getAllCompanies();
-	}
-
-	@Override
-	@Transactional
-	public void createCompany(CompanyDTO companyDTO) {
-		companyDAO.createCompany(companyDTO);
-		
-	}
-
-	@Override
-	@Transactional
-	public CompanyDTO getCompany(Long id) {
-		return companyDAO.getCompany(id);
-	}
-
-	@Override
-	@Transactional
-	public void deleteCompany(Long id) {
-		companyDAO.deleteCompany(id);		
-	}
-
-	@Override
-	@Transactional
-	public void updateCompany(Long id, CompanyDTO companyDTO) {
-		companyDAO.updateCompany(id, companyDTO);
-		
-	}
-
-	@Override
-	public Company getCompanybyId(Long id) {
-		return companyDAO.getCompanybyID(id);
-	}
+@Slf4j
+public class CompanyServiceImpl 
+	implements CompanyService 
+		{
 	
+	private final CompanyDAO companyDAO;
 	
+	private final Feignuser feignuser;
+
+	private final CompanyMapper companyMapper;
+	
+	@Transactional
+	public List<CompanyDTOResponse> getAllCompanies() {
+		log.info("Get all companies");
+		List<Company> cList = companyDAO.findAll();
+		List<CompanyDTOResponse> companyDTOResponses = new ArrayList<CompanyDTOResponse>();
+		for (Company c: cList)
+		{
+			CompanyDTOResponse companyDTOResponse = companyMapper.companyToCompanyResponse(c);
+					
+			List<Userrecord> userrecords = feignuser.findByCompanyId(c.getId()); 
+			if (userrecords != null)
+			{
+			companyDTOResponse.setUsers(userrecords);
+			}
+			companyDTOResponses.add(companyDTOResponse);
+			
+		}
+		return companyDTOResponses;
+	}
+
+	@Transactional
+	public CompanyDTOResponse createCompany(CompanyDTORequest companyDTORequest) {
+		log.info("Creating new company: {}", companyDTORequest);
+		Company company = companyMapper.companyrequestToCompany(companyDTORequest);
+		companyDAO.save(company);
+		return companyMapper.companyToCompanyResponse(company);
+	}
+
+	@Transactional
+	public CompanyDTOResponse getCompany(Long id) {
+		log.info("Get company by id: {}", id);
+		Optional<Company> company = companyDAO.findById(id);
+		CompanyDTOResponse companyDTOResponse = companyMapper.companyToCompanyResponse(company.get());
+		List<Userrecord> userrecords = feignuser.findByCompanyId(company.get().getId()); 
+		if (userrecords != null)
+		{
+			companyDTOResponse.setUsers(userrecords);
+		}		
+		return companyDTOResponse;
+	}
+
+	@Transactional
+	public void deleteCompany(Long id) throws Exception {
+		log.info("Deleting company with id: {}", id);
+		if(!companyDAO.existsById(id))
+		{
+			throw new Exception("Company with id "+id+" does not exist");
+		}
+		companyDAO.deleteById(id);
+		List<Userrecord> userrecords = feignuser.findByCompanyId(id);
+		if (userrecords != null && !userrecords.isEmpty()) {
+		for (Userrecord ur: userrecords)
+		{
+			ur.setCompanyId(null);
+			feignuser.updateUserrecord(ur.getId(), ur);
+		}}
+	}
+
+	@Transactional
+	public CompanyDTOResponse updateCompany(Long id, CompanyDTORequest companyDTORequest) throws Exception {
+		log.info("Updating company with id {}: {}", id, companyDTORequest);
+		Optional<Company> company;
+		if (companyDAO.existsById(id))
+		{
+		company = companyDAO.findById(id);
+		companyMapper.updateCompany(company.get(), companyDTORequest);
+		companyDAO.save(company.get());
+		}
+		else {
+			throw new Exception("Company with id: "+id + " is not exist");
+		}
+		return companyMapper.companyToCompanyResponse(company.get());
+	}
+
 }

@@ -6,20 +6,22 @@ import org.springframework.stereotype.Service;
 
 import com.zzzrbn.taskcompanyservice.entity.Company;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTO;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
+import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
 
 @Service
 public interface CompanyService {
 
-	public List<CompanyDTO> getAllCompanies();
+	public List<CompanyDTOResponse> getAllCompanies();
 	
-	public void createCompany(CompanyDTO companyDTO);
+	public CompanyDTOResponse createCompany(CompanyDTORequest companyDTORequest);
 	
-	public CompanyDTO getCompany (Long id);
+	public CompanyDTOResponse getCompany (Long id);
 	
-	public Company getCompanybyId (Long id);
+//	public CompanyDTOResponse getCompanybyId (Long id);
 	
-	public void deleteCompany(Long id);
+	public void deleteCompany(Long id) throws Exception;
 	
-	public void updateCompany(Long id, CompanyDTO companyDTO);
+	public CompanyDTOResponse updateCompany(Long id, CompanyDTORequest companyDTORequest) throws Exception;
 	
 }

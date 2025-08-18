@@ -1,5 +1,6 @@
 package com.zzzrbn.taskcompanyservice.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,27 +27,27 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name="companies")
-public class Company implements Serializable {
+public class Company {
 	
     @Id
-    //@ToString.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@JsonIgnore
     @Column(name = "id")
     private Long id;
     
-    @Column(name = "name")
+    @NotBlank(message = "Company name is required")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
     
-    @Column(name = "budget")
+    @Min(value = 0, message = "Budget must be >= 0")
+    @Column(name = "budget", nullable = false)
     private BigDecimal budget;
     
     @ElementCollection
     @CollectionTable(name = "company_users", joinColumns = @JoinColumn(name = "company_id"))
     @Column(name = "userrecord_id")
-    private List<Long> usersIds;
+    private List<Long> usersIds = new ArrayList<Long>();
     
     @Transient
-    private List<Userrecord> users;
+    private List<Userrecord> userrecords;
     
 }
