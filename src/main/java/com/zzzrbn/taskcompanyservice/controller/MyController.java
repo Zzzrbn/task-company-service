@@ -12,17 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zzzrbn.taskcompanyservice.entity.CompanyDTO;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
 import com.zzzrbn.taskcompanyservice.service.CompanyService;
-import com.zzzrbn.taskcompanyservice.service.CompanyServiceImpl;
 
 import lombok.RequiredArgsConstructor;
-
-
 
 @RestController
 @RequestMapping("/")
@@ -31,32 +28,30 @@ public class MyController {
 
 	@Autowired
 	private CompanyService companyService;
-	
+
 	@GetMapping("/company")
-	public ResponseEntity<List<CompanyDTOResponse>> getAllCompanies() {
-		List<CompanyDTOResponse> allCompanies = companyService.getAllCompanies();
+	public ResponseEntity<List<CompanyDTOResponse>> getAllCompanies(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		List<CompanyDTOResponse> allCompanies = companyService.getAllCompanies(page, size);
 		return ResponseEntity.status(HttpStatus.OK).body(allCompanies);
 	}
-		
+
 	@GetMapping("/company/{id}")
 	public ResponseEntity<CompanyDTOResponse> getCompany(@PathVariable Long id) {
 		CompanyDTOResponse companyDTOResponse = companyService.getCompany(id);
-//		System.out.println("get company with id: " + id+ " : "+ companyDTOResponse.toString());
 		return ResponseEntity.status(HttpStatus.OK).body(companyDTOResponse);
 	}
-		
+
 	@PostMapping("/company")
-	public ResponseEntity<CompanyDTOResponse> addNewCompany(@RequestBody CompanyDTORequest companyDTORequest)
-	{
+	public ResponseEntity<CompanyDTOResponse> addNewCompany(@RequestBody CompanyDTORequest companyDTORequest) {
 		CompanyDTOResponse companyDTOResponse = companyService.createCompany(companyDTORequest);
-		//companyService.createCompany(companyDTORequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(companyDTOResponse);
-		
+
 	}
-	
+
 	@PutMapping("/company/{id}")
-	public ResponseEntity<CompanyDTOResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyDTORequest companyDTORequest) throws Exception
-	{
+	public ResponseEntity<CompanyDTOResponse> updateCompany(@PathVariable Long id,
+			@RequestBody CompanyDTORequest companyDTORequest) throws Exception {
 		try {
 			CompanyDTOResponse companyDTOResponse = companyService.updateCompany(id, companyDTORequest);
 			return ResponseEntity.status(HttpStatus.OK).body(companyDTOResponse);
@@ -64,21 +59,16 @@ public class MyController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 	}
-	
+
 	@DeleteMapping("/company/{id}")
-	public ResponseEntity<String> deleteCompany(@PathVariable Long id) throws Exception
-	{
+	public ResponseEntity<String> deleteCompany(@PathVariable Long id) throws Exception {
 		try {
-		companyService.deleteCompany(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Company with id = " + id + " was deleted");
-		}
-		catch (Exception e) {
+			companyService.deleteCompany(id);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Company with id = " + id + " was deleted");
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company with id = " + id + "does not exist");
 		}
-
-		
 	}
-	
 
 	
 }

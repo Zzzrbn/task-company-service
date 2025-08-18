@@ -3,35 +3,23 @@ package com.zzzrbn.taskcompanyservice.client;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.zzzrbn.taskcompanyservice.entity.Userrecord;
 
-
-@FeignClient(name = "task-user-service")
+@FeignClient(name = "task-user-service", contextId = "task-user-service1")
 public interface Feignuser {
 	
-//	@GetMapping("/company")
-//	public List<CompanyDTO> showAllCompanies();
-			
 	@GetMapping("/user/{id}")
-	public Userrecord getUserrecord(@PathVariable Long id);
+	Userrecord getUserrecord(@PathVariable Long id);
 	
+	@GetMapping("/user/bycompany/{companyId}")
+	List<Userrecord> findByCompanyId(@PathVariable Long companyId);
 
-//	@PostMapping("/company")
-//	public CompanyDTO addNewCompany(@RequestBody CompanyDTO companyDTO);
-//	
-//	@PutMapping("/company/{id}")
-//	public CompanyDTO updateCompany(@PathVariable Long id
-//			, @RequestBody CompanyDTO companyDTO);
-//	
-//	@DeleteMapping("/company/{id}")
-//	public String deleteCompany(@PathVariable Long id);
-//	
-	
+	@PutMapping("/user/{id}")
+	public Userrecord updateUserrecord(@PathVariable Long id
+			, @RequestBody Userrecord userrecord);
 }
