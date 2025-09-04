@@ -1,10 +1,15 @@
 package com.zzzrbn.taskcompanyservice.mappers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
+import com.zzzrbn.taskcompanyservice.client.Feignuser;
 import com.zzzrbn.taskcompanyservice.entity.Company;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
+import com.zzzrbn.taskcompanyservice.entity.Userrecord;
 
 @Component
 public class CompanyMapper {
@@ -32,4 +37,18 @@ public class CompanyMapper {
 		company.setUsersIds(companyDTORequest.getUserrecordIds());
 	}
 
+	public List<CompanyDTOResponse> companyListToCompanyDTOResponses(List<Company> cList, Feignuser feignuser)
+	{
+		List<CompanyDTOResponse> companyDTOResponses = new ArrayList<>();
+		for (Company c : cList) {
+			CompanyDTOResponse companyDTOResponse = companyToCompanyResponse(c);
+			List<Userrecord> userrecords = feignuser.findByCompanyId(c.getId());
+			if (userrecords != null) {
+				companyDTOResponse.setUsers(userrecords);
+			}
+			companyDTOResponses.add(companyDTOResponse);
+		}
+		return companyDTOResponses;
+	}
+	
 }

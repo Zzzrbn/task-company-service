@@ -16,8 +16,8 @@ public interface CompanyService {
 	
 	public CompanyDTOResponse getCompany (Long id);
 	
-	public void deleteCompany(Long id) throws Exception;
+	public void deleteCompany(Long id);
 	
-	public CompanyDTOResponse updateCompany(Long id, CompanyDTORequest companyDTORequest) throws Exception;
+	public CompanyDTOResponse updateCompany(Long id, CompanyDTORequest companyDTORequest);
 	
 }

@@ -2,8 +2,8 @@ package com.zzzrbn.taskcompanyservice.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import jakarta.persistence.CollectionTable;
@@ -19,12 +19,16 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 @Entity
 @Table(name="companies")
 public class Company {
@@ -49,5 +53,22 @@ public class Company {
     
     @Transient
     private List<Userrecord> userrecords;
-    
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(budget, name, userrecords, usersIds);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Company other = (Company) obj;
+		return Objects.equals(budget, other.budget) && Objects.equals(name, other.name)
+				&& Objects.equals(userrecords, other.userrecords) && Objects.equals(usersIds, other.usersIds);
+	}    
 }

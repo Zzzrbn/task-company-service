@@ -3,8 +3,6 @@ package com.zzzrbn.taskcompanyservice.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,56 +17,53 @@ import com.zzzrbn.taskcompanyservice.entity.CompanyDTORequest;
 import com.zzzrbn.taskcompanyservice.entity.CompanyDTOResponse;
 import com.zzzrbn.taskcompanyservice.service.CompanyService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
-public class MyController {
+@Slf4j
+public class CompanyController {
 
 	@Autowired
 	private CompanyService companyService;
 
 	@GetMapping("/company")
-	public ResponseEntity<List<CompanyDTOResponse>> getAllCompanies(@RequestParam(defaultValue = "0") int page,
+	public List<CompanyDTOResponse> getAllCompanies(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
+		log.info("Getting all companies (page= {}, size={})", page, size);
 		List<CompanyDTOResponse> allCompanies = companyService.getAllCompanies(page, size);
-		return ResponseEntity.status(HttpStatus.OK).body(allCompanies);
+		return allCompanies;
 	}
 
 	@GetMapping("/company/{id}")
-	public ResponseEntity<CompanyDTOResponse> getCompany(@PathVariable Long id) {
+	public CompanyDTOResponse getCompany(@PathVariable Long id) {
+		log.info("Getting company with id = {}", id);
 		CompanyDTOResponse companyDTOResponse = companyService.getCompany(id);
-		return ResponseEntity.status(HttpStatus.OK).body(companyDTOResponse);
+		return companyDTOResponse;
 	}
 
 	@PostMapping("/company")
-	public ResponseEntity<CompanyDTOResponse> addNewCompany(@RequestBody CompanyDTORequest companyDTORequest) {
+	public CompanyDTOResponse addNewCompany(@RequestBody @Valid CompanyDTORequest companyDTORequest) {
+		log.info("Adding new company: {}", companyDTORequest.toString());
 		CompanyDTOResponse companyDTOResponse = companyService.createCompany(companyDTORequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(companyDTOResponse);
-
+		return companyDTOResponse;
 	}
 
 	@PutMapping("/company/{id}")
-	public ResponseEntity<CompanyDTOResponse> updateCompany(@PathVariable Long id,
-			@RequestBody CompanyDTORequest companyDTORequest) throws Exception {
-		try {
-			CompanyDTOResponse companyDTOResponse = companyService.updateCompany(id, companyDTORequest);
-			return ResponseEntity.status(HttpStatus.OK).body(companyDTOResponse);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+	public CompanyDTOResponse updateCompany(@PathVariable Long id,
+			@RequestBody @Valid CompanyDTORequest companyDTORequest) {
+		log.info("Updating company with id = {} : {}", id, companyDTORequest.toString());
+		CompanyDTOResponse companyDTOResponse = companyService.updateCompany(id, companyDTORequest);
+		return companyDTOResponse;		
 	}
 
 	@DeleteMapping("/company/{id}")
-	public ResponseEntity<String> deleteCompany(@PathVariable Long id) throws Exception {
-		try {
-			companyService.deleteCompany(id);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Company with id = " + id + " was deleted");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company with id = " + id + "does not exist");
-		}
-	}
-
-	
+	public String deleteCompany(@PathVariable Long id) {		
+		log.info("Deleting company with id = {}", id);
+		companyService.deleteCompany(id);
+		return "Company with id = " + id + " was deleted";
+	}	
 }
